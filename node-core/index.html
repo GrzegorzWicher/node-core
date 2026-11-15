@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   html,body{margin:0;height:100%;background:#F3F6F6;overflow:hidden}
-  iframe{position:fixed;inset:0;width:100%;height:100%;border:0;padding:env(safe-area-inset-top) 0 0 0;box-sizing:border-box;background:inherit}
+  iframe{position:fixed;top:0;left:0;right:0;width:100%;height:100%;border:0;padding:env(safe-area-inset-top) 0 0 0;box-sizing:border-box;background:inherit}
   #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font:15px system-ui,sans-serif;color:#5A6E73;gap:12px;flex-direction:column}
   #load img{width:96px;height:96px;border-radius:18px}
 </style>
@@ -36,6 +36,17 @@
 <div id="load"><img src="icon-192.png" alt=""><span>NODE Core…</span></div>
 <iframe id="app" src="https://script.google.com/macros/s/AKfycbzHNVw7X_8cWKXxEEmhHFPPopKSAwBrSmMZBiNlTr2mZTDjVHBas4EPIS2kdn8oIqmj/exec" title="NODE Core" allow="clipboard-write; camera" onload="document.getElementById('load').style.display='none'"></iframe>
 <script>
+  /* the keyboard must not shrink the app: the frame keeps the full screen height (only a turn of the phone changes it),
+     so the Google pages around NODE Core are not resized and their white background does not flash under the keyboard */
+  (function(){
+    var f = document.getElementById("app"), H = 0, W = window.innerWidth;
+    function fit(){
+      var h = Math.max(window.innerHeight, document.documentElement.clientHeight);
+      if (window.innerWidth !== W) { W = window.innerWidth; H = 0; }   // turned: measure again
+      if (h > H) { H = h; f.style.height = H + "px"; }
+    }
+    fit(); window.addEventListener("resize", fit); window.addEventListener("orientationchange", function(){ setTimeout(function(){ W = -1; fit(); }, 300); });
+  })();
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
